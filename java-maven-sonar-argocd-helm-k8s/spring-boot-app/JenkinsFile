@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                 git branch: 'main', credentialsId: 'your-git-credentials', url: 'https://github.com/gowthamkalipalli/Jenkins-Zero-To-Hero.git'
+                git branch: 'main', credentialsId: 'your-git-credentials', url: 'https://github.com/gowthamkalipalli/Jenkins-Zero-To-Hero.git'
             }
         }
         stage('Build and Test') {
@@ -19,7 +19,7 @@ pipeline {
         }
         stage('Static Code Analysis') {
             environment {
-                SONAR_URL = "http://http://100.26.233.87/:9000" // Update with your SonarQube server URL
+                SONAR_URL = "http://100.26.233.87:9000" // Corrected SonarQube server URL
             }
             steps {
                 withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
@@ -27,7 +27,6 @@ pipeline {
                 }
             }
         }
-    stages {
         stage('Build and Pull Docker Image') {
             environment {
                 DOCKER_HUB_USERNAME = credentials('docker-hub-creds').username
