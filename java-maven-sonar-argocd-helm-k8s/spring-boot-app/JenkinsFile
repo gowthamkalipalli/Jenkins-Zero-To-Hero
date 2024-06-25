@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/gowthamkalipalli/Jenkins-Zero-To-Hero.git'
+                 git branch: 'main', credentialsId: 'your-git-credentials', url: 'https://github.com/gowthamkalipalli/Jenkins-Zero-To-Hero.git'
             }
         }
         stage('Build and Test') {
@@ -27,16 +27,18 @@ pipeline {
                 }
             }
         }
-        stage('Build and Push Docker Image') {
+    stages {
+        stage('Build and Pull Docker Image') {
             environment {
-                DOCKER_IMAGE = "gowthamk4/ultimate-cicd:${BUILD_NUMBER}"
+                DOCKER_HUB_USERNAME = credentials('docker-hub-creds').username
+                DOCKER_HUB_PASSWORD = credentials('docker-hub-creds').password
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-                    sh "docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD"
-                    sh "docker pull gowthamk4/maven-gowtham-docker-agent:v2" // Ensure this image exists and is accessible
-                    sh "docker build -t $DOCKER_IMAGE ."
-                    sh "docker push $DOCKER_IMAGE"
+                    script {
+                        sh "docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD"
+                        sh "docker pull gowthamk4/maven-gowtham-docker-agent:v2"
+                    }
                 }
             }
         }
